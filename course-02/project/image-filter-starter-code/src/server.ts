@@ -29,18 +29,23 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   app.get("/filteredimage", async (req, res) => {
     var url = req.query.image_url;
     let myFunc = async (data: any, func: any) => {
-      try{
-        let allFile = [];
+      try {
         const path = await filterImageFromURL(data);
-        allFile.push(path);
-        func(allFile);
-        res.status(200).send("success");
-      }catch(err){
+        res.sendFile(path, function (err) {
+          let allFile = [];
+          if (err) {
+            res.send(err);
+          } else {
+            allFile.push(path);
+            func(allFile);
+          }
+        });
+      } catch (err) {
         res.status(422);
         res.send(err);
       }
     }
-    if (url.match(/\.jpg$/) != null){
+    if (url.match(/\.jpg$/) != null) {
       await myFunc(url, deleteLocalFiles);
     }
   });
