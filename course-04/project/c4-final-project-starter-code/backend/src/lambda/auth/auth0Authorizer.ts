@@ -57,24 +57,24 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
   if (!authHeader) throw new Error('No authentication header')
 
   if (!authHeader.toLowerCase().startsWith('bearer '))
-    throw new Error('Invalid authentication header');
-  
-  const certInfo = await getToken();
-  const split = authHeader.split(' ');
-  const token = split[1];
+    throw new Error('Invalid authentication header')
 
-  return verify(token, certInfo, { algorithms: ['RS256'] }) as JwtPayload;
+  const certInfo = await getToken()
+  const split = authHeader.split(' ')
+  const token = split[1]
+
+  return verify(token, certInfo, { algorithms: ['RS256'] }) as JwtPayload
 }
 
 async function getToken(): Promise<string> {
-  let certInfo: string;
+  let certInfo: string
   try {
-    const res = await Axios.get(jwksUrl);
-    const data = res['data']['keys'][0]['x5c'][0];
-    certInfo = `-----BEGIN CERTIFICATE-----\n${data}\n-----END CERTIFICATE-----`;
+    const res = await Axios.get(jwksUrl)
+    const data = res['data']['keys'][0]['x5c'][0]
+    certInfo = `-----BEGIN CERTIFICATE-----\n${data}\n-----END CERTIFICATE-----`
   } catch (err) {
-    logger.error('Can\'t fetch Auth certificate. Error: ', err);
+    logger.error("Can't fetch Auth certificate. Error: ", err)
   }
 
-  return certInfo;
+  return certInfo
 }
