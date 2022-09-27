@@ -42,3 +42,7 @@ export async function createTodo(
     dueDate: createTodoRequest.dueDate
   })
 }
+
+export async function todoExists(id: string): Promise<boolean> {
+  return await todoAccess.todoExists(id);
+}

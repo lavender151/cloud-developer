@@ -95,6 +95,19 @@ export class TodoAccess {
       ReturnValues: "UPDATED_NEW"
     }).promise();
   }
+
+  async todoExists(todoId: string): Promise<boolean> {
+    const result = await this.docClient
+      .get({
+        TableName: this.todoTable,
+        Key: {
+          todoId
+        }
+      })
+      .promise()
+  
+    return !!result.Item
+  }
 }
 
 function createDynamoDBClient() {
