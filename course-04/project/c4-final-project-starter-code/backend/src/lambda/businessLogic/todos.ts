@@ -1,48 +1,58 @@
-import * as uuid from 'uuid';
+import * as uuid from 'uuid'
 
-import { TodoItem } from '../../models/TodoItem';
-import { TodoAccess } from '../dataLayer/todoAccess';
-import { CreateTodoRequest } from '../../requests/CreateTodoRequest';
-import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest';
+import { TodoItem } from '../../models/TodoItem'
+import { TodoAccess } from '../dataLayer/todoAccess'
+import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
+import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
 
 const todoAccess = new TodoAccess()
 
 export async function getTodos(userId: string): Promise<TodoItem[]> {
-  return todoAccess.getTodosForUser(userId);
+  return todoAccess.getTodosForUser(userId)
 }
 
-export async function getTodo(userId: string, todoId: string): Promise<TodoItem> {
-  return todoAccess.getTodo(userId, todoId);
+export async function getTodo(
+  userId: string,
+  todoId: string
+): Promise<TodoItem> {
+  return todoAccess.getTodo(userId, todoId)
 }
 
-export async function updateTodo(userId: string, id: string, payload: UpdateTodoRequest) : Promise<void>{
-  return todoAccess.updateTodo(userId, id, payload);
+export async function updateTodo(
+  userId: string,
+  id: string,
+  payload: UpdateTodoRequest
+): Promise<void> {
+  return todoAccess.updateTodo(userId, id, payload)
 }
 
-export async function updateTodoAttachment(userId: string, id: string): Promise<void> {
-  return todoAccess.updateTodoAttachment(userId, id);
+export async function updateTodoAttachment(
+  userId: string,
+  id: string
+): Promise<void> {
+  return todoAccess.updateTodoAttachment(userId, id)
 }
 
 export async function deleteTodo(userId: string, id: string): Promise<void> {
-  return todoAccess.deleteTodo(userId, id);
+  return todoAccess.deleteTodo(userId, id)
 }
 
 export async function createTodo(
-  createTodoRequest: CreateTodoRequest,
+  todoItemRequest: CreateTodoRequest,
   userId: string
 ): Promise<TodoItem> {
-  const todoId = uuid.v4();
+  const todoId = uuid.v4()
 
   return await todoAccess.createTodo({
     todoId,
     userId,
-    name: createTodoRequest.name,
+    name: todoItemRequest.name,
     done: false,
     createdAt: new Date().toISOString(),
-    dueDate: createTodoRequest.dueDate
+    dueDate: todoItemRequest.dueDate
   })
 }
 
 export async function todoExists(id: string): Promise<boolean> {
-  return await todoAccess.todoExists(id);
+  return await todoAccess.todoExists(id)
 }
