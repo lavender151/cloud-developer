@@ -74,11 +74,12 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
   onTodoCheck = async (pos: number) => {
     try {
       const todo = this.state.todos[pos]
-      await patchTodo(this.props.auth.getIdToken(), todo.todoId, {
+      const status = await patchTodo(this.props.auth.getIdToken(), todo.todoId, {
         name: todo.name,
         dueDate: todo.dueDate,
         done: !todo.done
       })
+      console.log('status', status);
       this.setState({
         todos: update(this.state.todos, {
           [pos]: { done: { $set: !todo.done } }
@@ -97,7 +98,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
         loadingTodos: false
       })
     } catch (e) {
-      alert(`Failed to fetch todos: ${e.message}`)
+      alert(`Failed to fetch todos: ${e}`)
     }
   }
 

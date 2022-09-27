@@ -1,34 +1,35 @@
+import 'source-map-support/register'
+
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import 'source-map-support/register';
 import * as middy from 'middy';
 import { cors, httpErrorHandler } from 'middy/middlewares';
-import { CreateTodoRequest } from '../../requests/CreateTodoRequest';
-import { getUserId } from '../../auth/utils';
-import { createTodo } from '../businessLogic/todos';
+
+import {  todoExists as patchTodo } from '../businessLogic/todos';
 import { createLogger } from '../../utils/logger';
 
 const logger = createLogger('TodosAccess')
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const newTodoItem: CreateTodoRequest = JSON.parse(event.body)
-    const userId: string = getUserId(event);
-    logger.info('Start create todo item!');
-
-    const todoItem = await createTodo(newTodoItem, userId);
-
+    logger.info('Start delete todo item!');
+    const todoIdItem = event.pathParameters.todoId;
+    const status = await patchTodo(todoIdItem);
+    console.log(status);
+    
     return {
-      statusCode: 201,
+      statusCode: 200,
       body: JSON.stringify({
-        item: todoItem
+        status: status
       })
-    }
-  });
+    };
+  }
+)
 
 handler
   .use(httpErrorHandler())
   .use(
     cors({
+      origin: "*",
       credentials: true
     })
   )
