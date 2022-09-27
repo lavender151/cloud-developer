@@ -4,19 +4,30 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import * as middy from 'middy'
 import { cors, httpErrorHandler } from 'middy/middlewares'
 
-import { updateTodo } from '../../businessLogic/todos'
+import { updateTodo } from '../businessLogic/todos'
 import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
-import { getUserId } from '../utils'
+import { createLogger } from '../../utils/logger';
+import { getUserId } from '../../auth/utils'
+
+const logger = createLogger('Update Todo')
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const todoId = event.pathParameters.todoId
-    const updatedTodo: UpdateTodoRequest = JSON.parse(event.body)
-    // TODO: Update a TODO item with the provided id using values in the "updatedTodo" object
+    logger.info('Start update todo item ', event);
+    const todoId = event.pathParameters.todoId;
+    const userId: string = getUserId(event);
+    const updatedTodo: UpdateTodoRequest = JSON.parse(event.body);
+    logger.info('Update todo item ', updatedTodo)
 
+    const updatedItem = await updateTodo(userId, todoId, updatedTodo);
 
-    return undefined
-)
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        item: updatedItem
+      })
+    }
+  })
 
 handler
   .use(httpErrorHandler())
