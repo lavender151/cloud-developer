@@ -1,5 +1,6 @@
-service:
-  name: serverless-udagram-app
+org: lavender151
+app: tantt5-serverless-todo-app
+service: tantt5-serverless-todo-app
 
 plugins:
   - serverless-webpack

@@ -4,23 +4,23 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import * as middy from 'middy'
 import { cors, httpErrorHandler } from 'middy/middlewares'
 
-import { getTodos as getTodosForUser } from '../businessLogic/todos'
-import { getUserId } from '../../auth/utils'
+import { updateTodoAttachment } from '../businessLogic/todos'
 import { createLogger } from '../../utils/logger'
+import { getUserId } from '../../auth/utils'
 
-const logger = createLogger('TodosAccess')
+const logger = createLogger('Update Todo Attachment')
 
-// TODO: Get all TODO items for a current user
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    logger.info('Start get todo item!')
+    logger.info('Start update todo attachment', event)
+    const todoId = event.pathParameters.todoId
     const userId: string = getUserId(event)
-    const items = await getTodosForUser(userId)
+    const updatedItem = await updateTodoAttachment(userId, todoId)
 
     return {
       statusCode: 200,
       body: JSON.stringify({
-        items
+        item: updatedItem
       })
     }
   }
