@@ -14,7 +14,7 @@ import {
   Loader
 } from 'semantic-ui-react'
 
-import { createTodo, deleteTodo, getTodos, patchTodo, removeAttachment} from '../api/todos-api'
+import { createTodo, deleteTodo, getTodos, patchTodo, removeAttachment, getDownloadUrl, download} from '../api/todos-api'
 import Auth from '../auth/Auth'
 import { Todo } from '../types/Todo'
 
@@ -118,6 +118,26 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
       });
     }
   };
+
+  onDownloadButtonClick = async (todoId: string) => {
+    const todo = this.state.todos.find((todo) => todo.todoId === todoId);
+    if (todo?.attachmentUrl) {
+      const attachmentUrl = todo.attachmentUrl;
+      const attachmentUrlSplit = attachmentUrl.split("/");
+      const length = attachmentUrlSplit.length;
+      const todoAttachment = `${
+        attachmentUrlSplit[length - 1]
+      }`;
+      const idToken = this.props.auth.getIdToken();
+      const downloadUrl = await getDownloadUrl(
+        idToken,
+        todoAttachment
+      );
+      console.log(downloadUrl);
+      download(downloadUrl, attachmentUrlSplit[length - 1]);
+    }
+  };
+
   async componentDidMount() {
     try {
       const todos = await getTodos(this.props.auth.getIdToken())
@@ -197,7 +217,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                   checked={todo.done}
                 />
               </Grid.Column>
-              <Grid.Column width={10} verticalAlign="middle">
+              <Grid.Column width={6} verticalAlign="middle">
                 {todo.name}
               </Grid.Column>
               <Grid.Column width={3} floated="right">
@@ -210,6 +230,15 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                   onClick={() => this.onEditButtonClick(todo.todoId)}
                 >
                   <Icon name="pencil" />
+                </Button>
+              </Grid.Column>
+              <Grid.Column width={1} floated="right">
+                <Button
+                  icon
+                  color="purple"
+                  onClick={() => this.onDownloadButtonClick(todo.todoId)}
+                >
+                  <Icon name="download" />
                 </Button>
               </Grid.Column>
               <Grid.Column width={1} floated="right">

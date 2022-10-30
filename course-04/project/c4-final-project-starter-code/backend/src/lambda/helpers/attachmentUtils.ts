@@ -34,3 +34,11 @@ export async function removeAttachment(id: string): Promise<void> {
     logger.error('File not Found : ' + err.code)
   }
 }
+
+export function createAttachmentDownloadedUrl(key: string): string {
+  return s3.getSignedUrl("getObject", {
+    Bucket: process.env.ATTACHMENT_S3_BUCKET,
+    Key: key,
+    Expires: parseInt(process.env.SIGNED_URL_EXPIRATION),
+  });
+}

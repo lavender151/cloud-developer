@@ -4,6 +4,8 @@ import { CreateTodoRequest } from '../types/CreateTodoRequest';
 import Axios from 'axios'
 import { UpdateTodoRequest } from '../types/UpdateTodoRequest';
 
+const FileDownload = require('js-file-download')
+
 export async function getTodos(idToken: string): Promise<Todo[]> {
   console.log('Fetching todos')
 
@@ -97,4 +99,32 @@ export async function removeAttachment(
       Authorization: `Bearer ${idToken}`,
     },
   });
+}
+
+export function download(url: string, filename: string) {
+  Axios({
+    url,
+    method: 'GET',
+    responseType: 'blob',
+  }).then((response) => {
+      FileDownload(response.data, filename);
+  });
+}
+
+export async function getDownloadUrl(
+  idToken: string,
+  s3Key: string
+): Promise<string> {
+  const response = await Axios.post(
+    `${apiEndpoint}/todos/download-attachment`, {
+      s3Key
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+      },
+    }
+  );
+  return response.data.downloadUrl;
 }

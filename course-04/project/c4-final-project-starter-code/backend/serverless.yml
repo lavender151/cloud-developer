@@ -179,6 +179,21 @@ functions:
           - s3:GetObject
         Resource: arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*
 
+  GenerateDownUrl:
+    handler: src/lambda/http/generateDownloadUrl.handler
+    events:
+      - http:
+          method: post
+          path: todos/download-attachment
+          cors: true
+          authorizer: Auth
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+          - s3:GetObject
+        Resource: arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*
+
 resources:
   Resources:
     # Add necessary AWS resources. You will need at least the following AWS resources
