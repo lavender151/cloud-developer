@@ -15,7 +15,10 @@ export const handler = middy(
     logger.info('Start update todo attachment', event)
     const todoId = event.pathParameters.todoId
     const userId: string = getUserId(event)
-    const updatedItem = await updateTodoAttachment(userId, todoId)
+    let updatedItem: void
+    if(todoId){
+      updatedItem = await updateTodoAttachment(userId, todoId)
+    }
 
     return {
       statusCode: 200,

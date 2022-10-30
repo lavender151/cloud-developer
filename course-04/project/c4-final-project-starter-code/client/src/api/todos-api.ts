@@ -83,3 +83,18 @@ export async function putTodoAttachment(
     }
   })
 }
+
+export async function removeAttachment(
+  idToken: string,
+  todoId: string,
+  s3Key: string
+) {
+  await Axios.post(`${apiEndpoint}/todos/${todoId}/remove-attachment`, {
+    s3Key
+  }, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${idToken}`,
+    },
+  });
+}

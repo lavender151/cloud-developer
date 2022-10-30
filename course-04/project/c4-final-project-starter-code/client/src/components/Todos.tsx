@@ -14,7 +14,7 @@ import {
   Loader
 } from 'semantic-ui-react'
 
-import { createTodo, deleteTodo, getTodos, patchTodo } from '../api/todos-api'
+import { createTodo, deleteTodo, getTodos, patchTodo, removeAttachment} from '../api/todos-api'
 import Auth from '../auth/Auth'
 import { Todo } from '../types/Todo'
 
@@ -47,7 +47,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
   onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
     try {
       const dueDate = this.calculateDueDate()
-      if(this.state.newTodoName){
+      if (this.state.newTodoName) {
         const newTodo = await createTodo(this.props.auth.getIdToken(), {
           name: this.state.newTodoName,
           dueDate
@@ -94,6 +94,30 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     }
   }
 
+  onRemoveAttachmentButtonClick = async (todo: Todo) => {
+    const todoId = todo.todoId;
+    if (todo.attachmentUrl) {
+      const attachmentUrl = todo.attachmentUrl;
+      const attachmentUrlSplit = attachmentUrl.split("/");
+      const length = attachmentUrlSplit.length;
+      const s3Key = `${attachmentUrlSplit[length - 2]}/${attachmentUrlSplit[length - 1]
+        }`;
+      const idToken = this.props.auth.getIdToken();
+      await removeAttachment(idToken, todoId, s3Key);
+      let updatedTodos: Todo[] = [];
+      this.state.todos.forEach(function (todo) {
+        if (todo.todoId === todoId) {
+          todo.attachmentUrl = "";
+          updatedTodos.push(todo);
+        } else {
+          updatedTodos.push(todo);
+        }
+      });
+      this.setState({
+        todos: updatedTodos,
+      });
+    }
+  };
   async componentDidMount() {
     try {
       const todos = await getTodos(this.props.auth.getIdToken())
@@ -186,6 +210,15 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                   onClick={() => this.onEditButtonClick(todo.todoId)}
                 >
                   <Icon name="pencil" />
+                </Button>
+              </Grid.Column>
+              <Grid.Column width={1} floated="right">
+                <Button
+                  icon
+                  color="yellow"
+                  onClick={() => this.onRemoveAttachmentButtonClick(todo)}
+                >
+                  <Icon name="unlinkify" />
                 </Button>
               </Grid.Column>
               <Grid.Column width={1} floated="right">

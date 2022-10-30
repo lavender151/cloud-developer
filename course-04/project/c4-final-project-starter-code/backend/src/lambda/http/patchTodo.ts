@@ -13,8 +13,10 @@ export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     logger.info('Start delete todo item!')
     const todoIdItem = event.pathParameters.todoId
-    const status = await patchTodo(todoIdItem)
-    console.log(status)
+    let status: boolean
+    if(todoIdItem){
+      status = await patchTodo(todoIdItem)
+    }
 
     return {
       statusCode: 200,

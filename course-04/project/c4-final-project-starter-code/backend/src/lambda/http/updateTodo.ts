@@ -19,7 +19,10 @@ export const handler = middy(
     const updatedTodoItem: UpdateTodoRequest = JSON.parse(event.body)
     logger.info('Update todo item ', updatedTodoItem)
 
-    const itemUpdated = await updateTodo(userId, todoIdItem, updatedTodoItem)
+    let itemUpdated: void
+    if (todoIdItem || updatedTodoItem){
+      itemUpdated = await updateTodo(userId, todoIdItem, updatedTodoItem)
+    }
 
     return {
       statusCode: 200,

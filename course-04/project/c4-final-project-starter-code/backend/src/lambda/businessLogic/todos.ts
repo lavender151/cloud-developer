@@ -56,3 +56,7 @@ export async function createTodo(
 export async function todoExists(id: string): Promise<boolean> {
   return await todoAccess.todoExists(id)
 }
+
+export async function removeTodoAttachment(userId: string, id: string): Promise<void> {
+  return todoAccess.removeTodoAttachment(userId, id);
+}

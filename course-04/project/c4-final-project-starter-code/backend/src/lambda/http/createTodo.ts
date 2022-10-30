@@ -6,6 +6,7 @@ import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
 import { getUserId } from '../../auth/utils'
 import { createTodo } from '../businessLogic/todos'
 import { createLogger } from '../../utils/logger'
+import { TodoItem } from '../../models/TodoItem'
 
 const logger = createLogger('TodosAccess')
 
@@ -14,8 +15,10 @@ export const handler = middy(
     const newTodoItem: CreateTodoRequest = JSON.parse(event.body)
     const userId: string = getUserId(event)
     logger.info('Start create todo item!')
-
-    const todoItem = await createTodo(newTodoItem, userId)
+    let todoItem: TodoItem
+    if(newTodoItem) {
+      todoItem = await createTodo(newTodoItem, userId)
+    }
 
     return {
       statusCode: 201,
